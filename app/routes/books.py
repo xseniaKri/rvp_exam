@@ -1,8 +1,11 @@
+import logging
 import os
 
 from flask import (
     Blueprint, abort, current_app, flash, redirect, render_template, request, url_for,
 )
+
+logger = logging.getLogger(__name__)
 from flask_login import current_user
 from sqlalchemy import func, select
 
@@ -142,7 +145,10 @@ def add():
             )
 
         if cover_data is not None:
-            write_cover_file(cover_filename, cover_data)
+            try:
+                write_cover_file(cover_filename, cover_data)
+            except Exception:
+                logger.exception("Не удалось сохранить файл обложки: %s", cover_filename)
 
         flash(f"Книга «{book.title}» успешно добавлена", "success")
         return redirect(url_for("books.detail", book_id=book.id))

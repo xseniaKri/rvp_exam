@@ -17,4 +17,4 @@ sys.exit(1)
 EOF
 
 alembic upgrade head
-exec gunicorn -w 2 -b 0.0.0.0:8000 main:app
+exec gunicorn -w 2 -b 0.0.0.0:8000 --access-logfile - --error-logfile - --capture-output --log-level debug main:app
