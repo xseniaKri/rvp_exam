@@ -67,8 +67,8 @@ def save_cover(file, book_id: int) -> "tuple[Cover, bytes | None]":
     return cover, data
 
 
-def write_cover_file(cover, data: bytes) -> None:
-    dest = os.path.join(_upload_folder(), cover.filename)
+def write_cover_file(filename: str, data: bytes) -> None:
+    dest = os.path.join(_upload_folder(), filename)
     os.makedirs(os.path.dirname(dest), exist_ok=True)
     with open(dest, "wb") as fh:
         fh.write(data)

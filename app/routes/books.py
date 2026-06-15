@@ -127,6 +127,7 @@ def add():
             db.session.flush()
 
             cover, cover_data = save_cover(cover_file, book.id)
+            cover_filename = cover.filename
             book.cover = cover
 
             db.session.commit()
@@ -141,7 +142,7 @@ def add():
             )
 
         if cover_data is not None:
-            write_cover_file(cover, cover_data)
+            write_cover_file(cover_filename, cover_data)
 
         flash(f"Книга «{book.title}» успешно добавлена", "success")
         return redirect(url_for("books.detail", book_id=book.id))
