@@ -7,18 +7,43 @@
 
 ## Запуск
 
+### Через Docker (рекомендуется)
+
+1. Скопировать файл с переменными окружения и при необходимости отредактировать:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Собрать образы и запустить все сервисы:
+   ```bash
+   docker compose up --build
+   ```
+
+Миграции применяются автоматически при старте контейнера.  
+Приложение доступно по адресу: http://localhost:8000
+
+Для запуска в фоновом режиме:
 ```bash
-# 1. Поднять базу данных
-docker compose up -d
+docker compose up -d --build
+```
 
-# 2. Активировать виртуальное окружение
+Остановка:
+```bash
+docker compose down
+```
+
+---
+
+### Локальный запуск (без Docker)
+
+Требуется запущенный PostgreSQL и заполненный `.env`.
+
+```bash
+python -m venv venv
 source venv/bin/activate
-
-# 3. Применить миграции
+pip install -r requirements.txt
 alembic upgrade head
-
-# 4. Запустить приложение
-FLASK_APP=main.py FLASK_DEBUG=1 flask run
+flask run
 ```
 
 Приложение доступно по адресу: http://127.0.0.1:5000
