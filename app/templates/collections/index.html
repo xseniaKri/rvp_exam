@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Мои подборки — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-0"><i class="bi bi-collection me-2"></i>Мои подборки</h2>
+  <button
+    type="button"
+    class="btn btn-success"
+    data-bs-toggle="modal"
+    data-bs-target="#newCollectionModal"
+  >
+    <i class="bi bi-plus-lg me-1"></i>Добавить подборку
+  </button>
+</div>
+
+{% if collections %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Название</th>
+        <th class="text-center">Книг</th>
+        <th class="text-center">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in collections %}
+      <tr>
+        <td class="fw-semibold">{{ item.collection.name }}</td>
+        <td class="text-center">
+          <span class="badge bg-secondary">{{ item.book_count }}</span>
+        </td>
+        <td class="text-center">
+          <a
+            href="{{ url_for('collections.detail', collection_id=item.collection.id) }}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            <i class="bi bi-eye me-1"></i>Просмотр
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="bi bi-collection display-4 d-block mb-2"></i>
+  У вас пока нет подборок. Создайте первую!
+</div>
+{% endif %}
+
+<!-- Модальное окно: новая подборка -->
+<div class="modal fade" id="newCollectionModal" tabindex="-1" aria-labelledby="newCollectionLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newCollectionLabel">
+          <i class="bi bi-collection me-2"></i>Новая подборка
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form action="{{ url_for('collections.create') }}" method="post">
+        <div class="modal-body">
+          <label for="collectionName" class="form-label">Название подборки</label>
+          <input
+            type="text"
+            class="form-control"
+            id="collectionName"
+            name="name"
+            placeholder="Например: Любимые романы"
+            required
+            autofocus
+          />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-plus-lg me-1"></i>Добавить
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

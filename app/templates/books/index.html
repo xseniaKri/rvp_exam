@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Книги — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="mb-0">Каталог книг</h2>
+  {% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('books.add') }}" class="btn btn-success">
+      <i class="bi bi-plus-lg me-1"></i>Добавить книгу
+    </a>
+  {% endif %}
+</div>
+
+{% if books %}
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead class="table-dark">
+      <tr>
+        <th>Название</th>
+        <th>Автор</th>
+        <th>Жанр(ы)</th>
+        <th class="text-center">Год</th>
+        <th class="text-center">Оценка</th>
+        <th class="text-center">Рецензий</th>
+        <th class="text-center">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in books %}
+      {% set book = item.book %}
+      <tr>
+        <td>
+          <a href="{{ url_for('books.detail', book_id=book.id) }}" class="text-decoration-none fw-semibold">
+            {{ book.title }}
+          </a>
+        </td>
+        <td class="text-muted">{{ book.author }}</td>
+        <td>
+          {% for genre in book.genres %}
+            <span class="badge bg-secondary badge-genre">{{ genre.name }}</span>
+          {% endfor %}
+        </td>
+        <td class="text-center">{{ book.year }}</td>
+        <td class="text-center">
+          {% if item.avg_rating %}
+            <span class="star-rating">
+              <i class="bi bi-star-fill"></i>
+            </span>
+            {{ "%.1f"|format(item.avg_rating) }}
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          <span class="badge bg-light text-dark border">
+            {{ item.review_count }}
+          </span>
+        </td>
+        <td class="text-center text-nowrap">
+          <!-- Просмотр — всем -->
+          <a
+            href="{{ url_for('books.detail', book_id=book.id) }}"
+            class="btn btn-sm btn-outline-primary"
+            title="Просмотр"
+          >
+            <i class="bi bi-eye"></i>
+          </a>
+
+          <!-- Редактирование — Администратор и Модератор -->
+          {% if current_user.is_authenticated and current_user.is_moderator %}
+            <a
+              href="{{ url_for('books.edit', book_id=book.id) }}"
+              class="btn btn-sm btn-outline-warning"
+              title="Редактировать"
+            >
+              <i class="bi bi-pencil"></i>
+            </a>
+          {% endif %}
+
+          <!-- Удаление — только Администратор -->
+          {% if current_user.is_authenticated and current_user.is_admin %}
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              title="Удалить"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal"
+              data-book-title="{{ book.title }}"
+              data-delete-url="{{ url_for('books.delete', book_id=book.id) }}"
+            >
+              <i class="bi bi-trash"></i>
+            </button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- ===== PAGINATION ===== -->
+{% if total_pages > 1 %}
+<nav aria-label="Пагинация">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if page == 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('books.index', page=page-1) }}">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+
+    {% for p in range(1, total_pages + 1) %}
+      {% if p == page %}
+        <li class="page-item active">
+          <span class="page-link">{{ p }}</span>
+        </li>
+      {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('books.index', page=p) }}">{{ p }}</a>
+        </li>
+      {% elif p == page - 3 or p == page + 3 %}
+        <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+
+    <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('books.index', page=page+1) }}">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center text-muted py-5">
+  <i class="bi bi-book display-4 d-block mb-2"></i>
+  Книг пока нет
+</div>
+{% endif %}
+
+<!-- ===== MODAL УДАЛЕНИЕ ===== -->
+<div
+  class="modal fade"
+  id="deleteModal"
+  tabindex="-1"
+  aria-labelledby="deleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="bi bi-exclamation-triangle me-2"></i>Удаление книги
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          aria-label="Закрыть"
+        ></button>
+      </div>
+      <div class="modal-body" id="deleteModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-1"></i>Нет
+        </button>
+        <form id="deleteForm" method="post">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>Да
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const deleteModal = document.getElementById('deleteModal');
+  deleteModal.addEventListener('show.bs.modal', function (event) {
+    const btn = event.relatedTarget;
+    const title = btn.dataset.bookTitle;
+    const url = btn.dataset.deleteUrl;
+    document.getElementById('deleteModalBody').textContent =
+      'Вы уверены, что хотите удалить книгу «' + title + '»?';
+    document.getElementById('deleteForm').action = url;
+  });
+</script>
+{% endblock %}

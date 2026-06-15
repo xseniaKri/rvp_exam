@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Рецензия на «{{ book.title }}» — Электронная библиотека{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('books.index') }}">Каталог</a></li>
+        <li class="breadcrumb-item">
+          <a href="{{ url_for('books.detail', book_id=book.id) }}">{{ book.title }}</a>
+        </li>
+        <li class="breadcrumb-item active">Написать рецензию</li>
+      </ol>
+    </nav>
+
+    <h3 class="mb-1">Рецензия на книгу</h3>
+    <p class="text-muted mb-4">«{{ book.title }}» — {{ book.author }}</p>
+
+    <form method="post" novalidate>
+
+      <div class="mb-4">
+        <label for="rating" class="form-label fw-semibold">
+          Оценка <span class="text-danger">*</span>
+        </label>
+        <select class="form-select" id="rating" name="rating" required>
+          {% for value, label in rating_labels.items() | sort(reverse=True) %}
+            <option
+              value="{{ value }}"
+              {% if values.get('rating', '5') | string == value | string %}selected{% endif %}
+            >{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label for="text" class="form-label fw-semibold">
+          Текст рецензии <span class="text-danger">*</span>
+          <span class="text-muted fw-normal small">(поддерживается Markdown)</span>
+        </label>
+        <textarea class="form-control" id="text" name="text" rows="8">{{ values.get('text', '') }}</textarea>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-floppy me-1"></i>Сохранить
+        </button>
+        <a href="{{ url_for('books.detail', book_id=book.id) }}" class="btn btn-outline-secondary">
+          Отмена
+        </a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+  new EasyMDE({
+    element: document.getElementById('text'),
+    spellChecker: false,
+    autosave: { enabled: false },
+    toolbar: [
+      'bold', 'italic', '|',
+      'quote', 'unordered-list', 'ordered-list', '|',
+      'preview', 'guide'
+    ]
+  });
+</script>
+{% endblock %}

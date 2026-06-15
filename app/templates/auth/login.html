@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Вход — Электронная библиотека{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h4 class="card-title mb-4 text-center">
+          <i class="bi bi-lock me-1"></i>Вход в систему
+        </h4>
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label for="login" class="form-label">Логин</label>
+            <input
+              type="text"
+              class="form-control"
+              id="login"
+              name="login"
+              value="{{ request.form.get('login', '') }}"
+              required
+              autofocus
+            />
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Пароль</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="remember"
+                name="remember"
+                value="1"
+              />
+              <label class="form-check-label" for="remember">Запомнить меня</label>
+            </div>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Войти</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

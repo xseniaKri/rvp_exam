@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "books/_form_macro.html" import book_fields %}
+
+{% block title %}Добавить книгу — Электронная библиотека{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css" />
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('books.index') }}">Каталог</a></li>
+        <li class="breadcrumb-item active">Добавить книгу</li>
+      </ol>
+    </nav>
+
+    <h2 class="mb-4"><i class="bi bi-plus-circle me-2"></i>Добавить книгу</h2>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      {{ book_fields(values, genres, selected_genre_ids, with_cover=True) }}
+
+      <div class="d-flex gap-2 mt-4">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-floppy me-1"></i>Сохранить
+        </button>
+        <a href="{{ url_for('books.index') }}" class="btn btn-outline-secondary">Отмена</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+<script>
+  new EasyMDE({
+    element: document.getElementById('description'),
+    spellChecker: false,
+    autosave: { enabled: false },
+    toolbar: [
+      'bold', 'italic', 'heading', '|',
+      'quote', 'unordered-list', 'ordered-list', '|',
+      'link', 'image', '|',
+      'preview', 'side-by-side', 'fullscreen', '|',
+      'guide'
+    ]
+  });
+</script>
+{% endblock %}

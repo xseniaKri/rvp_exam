@@ -1,0 +1,125 @@
+{% macro book_fields(values, genres, selected_genre_ids, with_cover=False) %}
+<div class="mb-3">
+  <label for="title" class="form-label fw-semibold">
+    Название <span class="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    class="form-control"
+    id="title"
+    name="title"
+    value="{{ values.get('title', '') }}"
+    required
+    autofocus
+  />
+</div>
+
+<div class="mb-3">
+  <label for="author" class="form-label fw-semibold">
+    Автор <span class="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    class="form-control"
+    id="author"
+    name="author"
+    value="{{ values.get('author', '') }}"
+    required
+  />
+</div>
+
+<div class="mb-3">
+  <label for="publisher" class="form-label fw-semibold">
+    Издательство <span class="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    class="form-control"
+    id="publisher"
+    name="publisher"
+    value="{{ values.get('publisher', '') }}"
+    required
+  />
+</div>
+
+<div class="row">
+  <div class="col-md-4 mb-3">
+    <label for="year" class="form-label fw-semibold">
+      Год издания <span class="text-danger">*</span>
+    </label>
+    <input
+      type="number"
+      class="form-control"
+      id="year"
+      name="year"
+      value="{{ values.get('year', '') }}"
+      min="1000"
+      max="2100"
+      required
+    />
+  </div>
+  <div class="col-md-4 mb-3">
+    <label for="pages" class="form-label fw-semibold">
+      Объём (страниц) <span class="text-danger">*</span>
+    </label>
+    <input
+      type="number"
+      class="form-control"
+      id="pages"
+      name="pages"
+      value="{{ values.get('pages', '') }}"
+      min="1"
+      required
+    />
+  </div>
+</div>
+
+<div class="mb-3">
+  <label for="genre_ids" class="form-label fw-semibold">
+    Жанр(ы) <span class="text-danger">*</span>
+  </label>
+  <select
+    class="form-select"
+    id="genre_ids"
+    name="genre_ids"
+    multiple
+    size="5"
+    required
+  >
+    {% for genre in genres %}
+      <option
+        value="{{ genre.id }}"
+        {% if genre.id in selected_genre_ids %}selected{% endif %}
+      >{{ genre.name }}</option>
+    {% endfor %}
+  </select>
+  <div class="form-text">
+    Удерживайте <kbd>Ctrl</kbd> (или <kbd>⌘</kbd> на Mac) для выбора нескольких жанров
+  </div>
+</div>
+
+<div class="mb-3">
+  <label for="description" class="form-label fw-semibold">
+    Краткое описание <span class="text-danger">*</span>
+    <span class="text-muted fw-normal small">(поддерживается Markdown)</span>
+  </label>
+  <textarea class="form-control" id="description" name="description">{{ values.get('description', '') }}</textarea>
+</div>
+
+{% if with_cover %}
+<div class="mb-3">
+  <label for="cover" class="form-label fw-semibold">
+    Обложка <span class="text-danger">*</span>
+  </label>
+  <input
+    type="file"
+    class="form-control"
+    id="cover"
+    name="cover"
+    accept="image/*"
+    required
+  />
+  <div class="form-text">Допустимые форматы: JPG, PNG, GIF, WebP</div>
+</div>
+{% endif %}
+{% endmacro %}
